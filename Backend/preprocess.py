@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+from pathlib import Path
 
 class HandwritingPreprocessor:
 
@@ -39,6 +40,9 @@ class HandwritingPreprocessor:
     def deskew_image(self):
 
         coords = np.column_stack(np.where(self.binary > 0))
+        if coords.size == 0:
+            print("[WARN] No foreground pixels found; skipping deskew")
+            return
 
         angle = cv2.minAreaRect(coords)[-1]
 
@@ -115,11 +119,13 @@ class HandwritingPreprocessor:
 
 if __name__ == "__main__":
 
-    IMAGE_PATH = "sample_handwriting.jpg"
+    BASE_DIR = Path(__file__).resolve().parent
 
-    OUTPUT_PATH = "processed_output.png"
+    IMAGE_PATH = BASE_DIR / "sample_handwriting.jpg"
 
-    processor = HandwritingPreprocessor(IMAGE_PATH)
+    OUTPUT_PATH = BASE_DIR / "processed_output.png"
+
+    processor = HandwritingPreprocessor(str(IMAGE_PATH))
 
     contour_image = processor.process()
 

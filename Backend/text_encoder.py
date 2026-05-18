@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.nn.utils.rnn import pad_sequence
 
 class TextEncoder(nn.Module):
 
@@ -83,9 +84,26 @@ def text_to_tensor(text):
         if ch in char_to_idx:
             indices.append(char_to_idx[ch])
 
-    tensor = torch.tensor(indices).unsqueeze(0)
+    if not indices:
+        indices = [0]
+
+    tensor = torch.tensor(indices, dtype=torch.long).unsqueeze(0)
 
     return tensor
+
+
+def texts_to_tensor(texts):
+
+    sequences = [
+        text_to_tensor(text).squeeze(0)
+        for text in texts
+    ]
+
+    return pad_sequence(
+        sequences,
+        batch_first=True,
+        padding_value=0
+    )
 
 
 # ------------------------------------

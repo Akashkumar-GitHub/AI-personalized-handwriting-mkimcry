@@ -10,8 +10,8 @@ class StyleEncoder(nn.Module):
 
         super(StyleEncoder, self).__init__()
 
-        # Load pretrained ResNet18
-        base_model = models.resnet18(pretrained=True)
+        # Avoid implicit network downloads during local training.
+        base_model = models.resnet18(pretrained=False)
 
         # Remove final classification layer
         self.feature_extractor = nn.Sequential(
